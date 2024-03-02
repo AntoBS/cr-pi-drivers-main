@@ -1,0 +1,26 @@
+.card {
+
+
+    display: flex;
+    flex-direction: colum;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 25 px;
+    flex-wrap: wrap;
+    gap: 1em;
+    cursor: pointer;
+    -moz-osx-front-smoothing: grayscale;
+    backface-visibility: hidden;
+    transform: transform 0.25s ease-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 70%;
+    height: 150px; /* Altura máxima reducida */
+    object-fit:contain; /* Escalar y recortar la imagen para ajustarse */
+    border-radius: 5px; /* Un ligero redondeo para la imagen */
+}
