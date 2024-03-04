@@ -1,42 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { filterDrivers, getDrivers } from "../Redux/actions";
+import { filterChanged, getTeams, resetFilters, orderChange } from "../Redux/actions";
 
 const Filters = () => {
     const dispatch = useDispatch();
     const allTeams = useSelector((state) => state.teams);
-    const [filter, setFilter] = useState({
-        team: 'default',
-        source: 'default'
-    });
+    const filters = useSelector(state => state.filters);
+    const order = useSelector(state => state.order);
 
-    const handleChange = (event) => {
+
+    const handleFilterChange = (event) => {
         const { name, value } = event.target;
-        setFilter({ ...filter, [name]: value });
+
+        dispatch(filterChanged(name, value));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        dispatch(filterDrivers(filter));
+    const handleOrderChange = (event) => {
+        const { name, value } = event.target;
+
+        dispatch(orderChange(name, value));
     };
+
+    
 
     const handleReset = () => {
-        setFilter({ team: 'default', source: 'default' });
-        dispatch(getDrivers());
+        dispatch(resetFilters());
     };
 
+
     useEffect(() => {
-        if (Object.values(filter).find(e => e !== 'default')) {
-            dispatch(filterDrivers(filter));
-        }
-    }, [filter, dispatch]);
+        dispatch(getTeams());
+    }, [dispatch]);
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <label>
                     Team:
-                    <select name="team" value={filter.team} onChange={handleChange}>
+                    <select name="team" value={filters.team} onChange={handleFilterChange}>
                         <option value="default">All Teams</option>
                         {/* Render options dynamically based on allTeams */}
                         {allTeams.map((team) => (
@@ -46,13 +47,28 @@ const Filters = () => {
                 </label>
                 <label>
                     Source:
-                    <select name="source" value={filter.source} onChange={handleChange}>
+                    <select name="source" value={filters.source} onChange={handleFilterChange}>
                         <option value="default">All Sources</option>
                         <option value="api">API</option>
                         <option value="dbb">Database</option>
                     </select>
                 </label>
-                <button type="submit">Apply Filter</button>
+                <label>
+                    Birthday:
+                    <select name="birthday" value={order.birthday} onChange={handleOrderChange}>
+                        <option value="default">Birthday</option>
+                        <option value="asc">Ascending Order</option>
+                        <option value="dsc">Descending Order</option>
+                    </select>
+                </label>
+                <label>
+                    Alphabetically:
+                    <select name="alphabetically" value={order.alphabetically} onChange={handleOrderChange}>
+                        <option value="default">Alphabetically</option>
+                        <option value="asc">A - Z</option>
+                        <option value="dsc">Z - A</option>
+                    </select>
+                </label>
                 <button type="button" onClick={handleReset}>Reset</button>
             </form>
         </div>

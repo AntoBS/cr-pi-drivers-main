@@ -6,11 +6,39 @@ export const CREATE_DRIVER = "CREATE_DRIVER"
 export const GET_TEAMS = "GET_TEAMS";
 export const GET_DRIVER_DETAIL = "GET_DRIVER_DETAIL";
 export const FIND_BY_NAME = "FIND_BY_NAME";
-export const GET_FILTER_DRIVERS = "GET_FILTER_DRIVERS"
+export const GET_FILTER_DRIVERS = "GET_FILTER_DRIVERS";
+export const FILTER_CHANGED = "FILTER_CHANGED";
+export const RESET_FILTERS = "RESET_FILTERS";
+export const ORDER_CHANGE = "ORDER_CHANGE";
+export const PREVIOUS_PAGE = "PREVIOUS_PAGE";
 
-export const getDrivers = () => {
+export const getDrivers = (page, filters, order) => {
+
+    let offset = page * 9
+    
+    let url = `http://localhost:3001/drivers?offset=${offset}`;
+    console.log(filters);
+
+    if (filters.source !== "default"){
+        url += `&source=${filters.source}`;
+    }
+
+    if (filters.team !== "default"){
+        url += `&team=${filters.team}`;
+    }
+
+    if (order.alphabetically !== "default"){
+        url += `&alphabetically=${order.alphabetically}`;
+    }
+
+    if (order.birthday !== "default"){
+        url += `&birthday=${order.birthday}`;
+    }
+
+
     return async (dispatch) => {
-        const apiData = await axios.get(`http://localhost:3001/drivers`);
+        
+        const apiData = await axios.get(url);
         const drivers = apiData.data;
         dispatch({
             type: GET_DRIVERS,
@@ -19,31 +47,16 @@ export const getDrivers = () => {
     }
 }
 
-export const nextPage = (page, source) => {
-    return async (dispatch) => {
-        let offset = page * 9
-        let url = `http://localhost:3001/drivers?offset=${offset}`
-        if (source) {
-         url = url + `&source=${source}`   
-        }
-        const apiData = await axios.get(url);
-        const drivers = apiData.data;
-        dispatch({
-            type: NEXT_PAGE,
-            payload: drivers, 
-        })
-    }
+export const nextPage = () => {
+    return {
+        type: NEXT_PAGE,     
+    };
 }
 
-export const filterDrivers = (payload) => {
-    return async (dispatch) => {
-        const apiData = await axios.get(`http://localhost:3001/drivers?offset=${payload.offset}&source=${payload.source}&team=${payload.team}`);
-        const drivers = apiData.data;
-        dispatch({
-            type: GET_FILTER_DRIVERS,
-            payload: drivers, 
-        }) 
-    }
+export const previousPage = () => {
+    return {
+        type: PREVIOUS_PAGE,     
+    };
 }
 
 export const postDriver = (payload) => {
@@ -92,4 +105,30 @@ export const findByName = (name) => {
             
         }
     }
+}
+
+export const filterChanged = (filter, value) => {
+    return {
+        type: FILTER_CHANGED, 
+        payload: {
+            filter: filter,
+            value: value
+        }
+    };
+}
+
+export const orderChange = (order, value) => {
+    return {
+        type: ORDER_CHANGE,
+        payload: {
+            order: order,
+            value: value,
+        }
+    }
+}
+
+export const resetFilters = () => {
+    return {
+        type: RESET_FILTERS,
+    };
 }

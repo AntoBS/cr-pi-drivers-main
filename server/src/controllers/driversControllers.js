@@ -85,27 +85,41 @@ const getAllDrivers = async (offset, limit, filter, orden) => {
     drivers = drivers.filter((e) => e.teams?.toLowerCase().includes(team.toLowerCase()));
   }
 
-  if (alphabetically) {
-    drivers = drivers
-        .filter(driver => driver.name) // Filtra los elementos con 'name' definido
-        .sort((a, b) => a.driver.name.localeCompare(b.driver.name));
-}
+  drivers = drivers
+  .map(driver => mapDriver(driver));
 
-// if (alphabetically) {
-//   drivers = drivers
-//       .filter(driver => driver.name) // Filtra los elementos con 'name' definido
-//       .sort((a, b) => {
-//         if(a.name < b.name) { return -1; }
-//   if(a.name > b.name) { return 1; }
-//       });
-// }
-
-  if(birthday) {
-    drivers = drivers.sort((a, b) => new Date(a.birthday) - new Date(b.birthday))
+  if (alphabetically === "asc") {
+      drivers = drivers
+        // .filter(driver => driver.name) // Filtra los elementos con 'name' definido
+        .sort((a, b) =>  a.surname.localeCompare(b.surname));
   }
 
-  return drivers.slice(offset, offset + limit)
-      .map(driver => mapDriver(driver)); 
+  if (alphabetically === "dsc") {
+    drivers = drivers
+      // .filter(driver => driver.name) // Filtra los elementos con 'name' definido
+      .sort((a, b) =>  b.surname.localeCompare(a.surname));
+}
+
+
+  if(birthday === "dsc") {
+    drivers = drivers
+      .sort((a, b) => {
+        const dateA = new Date(a.birthdate).valueOf();
+        const dateB = new Date(b.birthdate).valueOf();
+        return dateA - dateB;
+      })
+  }
+
+  if(birthday === "asc") {
+    drivers = drivers
+      .sort((a, b) => {
+        const dateA = new Date(a.birthdate).valueOf();
+        const dateB = new Date(b.birthdate).valueOf();
+        return dateB - dateA;
+      })
+  }
+
+  return drivers.slice(offset, offset + limit); 
 }
 
 const getAllDriversApi = async () => {

@@ -1,7 +1,7 @@
 import CardsContainer from '../../Components/CardsContainer/CardsContainer'
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getDrivers, nextPage } from '../../Redux/actions';
+import { getDrivers, nextPage, previousPage } from '../../Redux/actions';
 import Filters from '../../utils/Filters';
 
 
@@ -9,43 +9,40 @@ import Filters from '../../utils/Filters';
 
 const Home = () => {
 
-    const dispatch = useDispatch();
-    const drivers = useSelector(state => state.drivers);
-    const [currentPage, setCurrentPage] = useState(0);
-    //const teams = useSelector((state) => state.teams);
-    
+  const dispatch = useDispatch();
+  const filters = useSelector(state => state.filters);
+  const order = useSelector(state => state.order);
+  const page = useSelector((state) => state.page)
+  
 
-    useEffect(()=>{
-        dispatch(getDrivers(currentPage))
-    }, [])
 
-    const handlePreviousPage = () => {
-      const newPage = Math.max(0, currentPage - 1);
-      setCurrentPage(newPage);
-      dispatch(nextPage(newPage));
+  useEffect(() => {
+    dispatch(getDrivers(page, filters, order))
+  }, [page, filters, order])
+
+  const handlePreviousPage = () => {
+    dispatch(previousPage());
   };
 
   const handleNextPage = () => {
-      const newPage = currentPage + 1;
-      setCurrentPage(newPage);
-      dispatch(nextPage(newPage));
+    dispatch(nextPage());
   };
 
-    return (
-      <>
-        <div>
-          <Filters/>
-        </div>
-        <div>
-          <h1>Drivers</h1>
-          <CardsContainer />
-        </div>
-        <div>
-          <button onClick={handlePreviousPage}>Previous Page</button>
-          <button onClick={handleNextPage}>Next Page</button>
-        </div>
-      </>
-    );
+  return (
+    <>
+      <div>
+        <Filters />
+      </div>
+      <div>
+        <h1>Drivers</h1>
+        <CardsContainer />
+      </div>
+      <div>
+        <button onClick={handlePreviousPage}>Previous Page</button>
+        <button onClick={handleNextPage}>Next Page</button>
+      </div>
+    </>
+  );
 }
 
 export default Home;
